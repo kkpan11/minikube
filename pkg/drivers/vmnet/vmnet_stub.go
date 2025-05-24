@@ -18,6 +18,13 @@ limitations under the License.
 
 package vmnet
 
-func HelperAvailable() bool {
-	return false
+import (
+	"fmt"
+	"runtime"
+
+	"k8s.io/minikube/pkg/minikube/reason"
+)
+
+func ValidateHelper() error {
+	return &Error{Kind: reason.Usage, Err: fmt.Errorf("vmnet-helper is not available on %q", runtime.GOOS)}
 }
