@@ -49,6 +49,21 @@ var (
 				`CNI_PLUGINS_LATEST_VERSION=.*`: `CNI_PLUGINS_LATEST_VERSION="{{.Version}}"`,
 			},
 		},
+		".github/workflows/pr.yml": {
+			Replace: map[string]string{
+				`CNI_PLUGIN_VERSION\s*=\s*["\\]*v[0-9.]+["\\]*`: `CNI_PLUGIN_VERSION="{{.Version}}"`,
+			},
+		},
+		".github/workflows/master.yml": {
+			Replace: map[string]string{
+				`CNI_PLUGIN_VERSION\s*=\s*["\\]*v[0-9.]+["\\]*`: `CNI_PLUGIN_VERSION="{{.Version}}"`,
+			},
+		},
+		"hack/jenkins/installers/check_install_cni_plugins.sh": {
+			Replace: map[string]string{
+				`CNI_PLUGIN_VERSION="v[0-9.]+"`: `CNI_PLUGIN_VERSION="{{.Version}}"`,
+			},
+		},
 	}
 )
 
@@ -102,7 +117,7 @@ func updateHashFile(version, arch, packagePath string) error {
 		return fmt.Errorf("failed to open hash file: %v", err)
 	}
 	defer f.Close()
-	if _, err := f.WriteString(fmt.Sprintf("sha256 %x  cni-plugins-linux-%s-%s.tgz\n", sum, arch, version)); err != nil {
+	if _, err := fmt.Fprintf(f, "sha256 %x  cni-plugins-linux-%s-%s.tgz\n", sum, arch, version); err != nil {
 		return fmt.Errorf("failed to write to hash file: %v", err)
 	}
 	return nil
